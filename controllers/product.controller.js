@@ -1,4 +1,5 @@
 import pool from "../database/db.js";
+import { validateProduct } from "../schema/index.js";
 
 export const getAllproduct = async (req, res, next) => {
   try {
@@ -11,6 +12,11 @@ export const getAllproduct = async (req, res, next) => {
 
 export const createproduct = async (req, res, next) => {
   const { name, price, selesmean_id } = req.body;
+  const {error , value} = validateProduct(req.body);
+  if (error) {
+    console.log(error.details[0].message);
+    return res.status(400).send({ errorMsg: error.details[0].message });
+  }
   try {
     const { rows } = await pool.query(
       "INSERT INTO product ( name, price, selesmean_id) VALUES ($1,$2,$3)",
